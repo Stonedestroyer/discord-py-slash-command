@@ -14,6 +14,7 @@ class SlashCommandRequest:
     def __init__(self, logger, _discord):
         self.logger = logger
         self._discord: typing.Union[discord.Client, discord.AutoShardedClient] = _discord
+        self._application_id = (_discord.loop.create_task(self.application_id_request))["id"]
 
     def put_slash_commands(self, slash_commands: list, guild_id):
         """
@@ -63,6 +64,12 @@ class SlashCommandRequest:
         base = {"name": cmd_name, "description": description, "options": options or []}
         return self.command_request(json=base, method="POST", guild_id = guild_id)
 
+    def application_id_request(self, **kwargs):
+        r""""Gets application ID"""
+        url = "/oauth2/applications/@me"
+        route = CustomRoute("GET", url)
+        return self._discord.http.request(route, **kwargs)
+
     def command_request(self, method, guild_id, url_ending="", **kwargs):
         r"""
         Sends a command request to discord (post, get, delete, etc)
@@ -72,7 +79,7 @@ class SlashCommandRequest:
         :param url_ending: String to append onto the end of the url.
         :param \**kwargs: Kwargs to pass into discord.py's `request function <https://github.com/Rapptz/discord.py/blob/master/discord/http.py#L134>`_
         """
-        url = f"/applications/{self._discord.user.id}"
+        url = f"/applications/{self._application_id}"
         url += "/commands" if not guild_id else f"/guilds/{guild_id}/commands"
         url += url_ending
         route = CustomRoute(method, url)

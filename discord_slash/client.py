@@ -47,6 +47,7 @@ class SlashCommand:
                  sync_on_cog_reload: bool = False,
                  override_type: bool = False):
         self._discord = client
+        self._application_id = http.CustomRoute.BASE
         self.commands = {}
         self.subcommands = {}
         self.logger = logging.getLogger("discord_slash")
@@ -95,6 +96,7 @@ class SlashCommand:
                     self._discord.loop.create_task(self.sync_all_commands(delete_from_unused_guilds))
 
                 self._discord.reload_extension = override_reload_extension
+
 
     def get_cog_commands(self, cog: commands.Cog):
         """
