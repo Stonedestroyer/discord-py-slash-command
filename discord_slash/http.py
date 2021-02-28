@@ -15,6 +15,7 @@ class SlashCommandRequest:
         self.logger = logger
         self._discord: typing.Union[discord.Client, discord.AutoShardedClient] = _discord
         self._application_id = (_discord.loop.create_task(self.application_id_request))["id"]
+        print("slashCommandRequest triggered")
 
     def put_slash_commands(self, slash_commands: list, guild_id):
         """
